@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Giphy API </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<style>
+  button,
+  newDiv,
+  form,
+  input {
+      margin: 10px;
+    }
+
+</style>
+  
+<body>
+
+<div class ="container"> 
+
+<h1> Topics for fun !! </h1>
+
+<div class="buttons"></div>
+
+<div id="Topic-info"> </div>
+    
+<form id="topic-form">
+    <label for="topic-input">Add  more </label>
+    <input type="text" id="topic-input"><br>
+    <!-- Button triggers new topic to be added -->
+    <input id="add-topic" type="submit" value="Add a new topic">
+</form>
+
+<div class="topic-view"> </div>
+
+</div>    
+</body>
+
+<script>
+
+var topicsArray = ["movies" , "soccer", "beach", "music"];
+var buttons = $(".buttons");
+var newDiv = $("<div>");
+
+function repeat () {
+
+newDiv.empty();
+
+for (var i=0; i<topicsArray.length; i++) {
+var topic = $("<button>");
+topic.addClass('topicClass');
+topic.attr("data-name", topicsArray[i]);
+topic.text(topicsArray[i]);
+newDiv.append(topic);
+buttons.append(newDiv);
+}
+};
+
+function displayTopicinfo () {
+
+ var topic = $(this).attr("data-name");
+
+ var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + topic + "&api_key=94OZBwtI00svLMdCJTgX8oLtwf4zjY6D&limit=10";
+ 
+ 
+ $.ajax ({
+  url : queryURL,
+  method: "GET"  
+}).then(function(response) {
+console.log(response);
+
+var results = response.data;
+
+for (var j = 0; j < results.length; j++) {
+
+var topicDiv = $("<div>");
+var p = $("<p>").text("Topic Rating is " + results[j].rating);
+var topicImage = $("<img>").attr("src", results[j].images.fixed_height_still.url);
+topicDiv.append(p,topicImage);
+$(".topic-view").prepend(topicDiv);
+
+}
+
+repeat();
+
+});
+
+}
+
+$("#add-topic").on("click", function (events) {
+event.preventDefault();
+var userInput = $("#topic-input").val();
+topicsArray.push(userInput);
+repeat();
+
+});
+
+$(document).on("click", ".topicClass", displayTopicinfo);
+
+repeat();
+
+
+</script>
+
+</html>
